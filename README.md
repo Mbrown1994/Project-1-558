@@ -112,10 +112,60 @@ SummaryData %>% summarise(sd1=sd(Countries.NewRecovered), sd2=sd(Countries.Total
     ##   sd1 sd2 sd3 sd4
     ## 1   0   0   0   0
 
-# \# Create at least 5 plots utilizing coloring, grouping, etc. All plots should have nice labels and titles.
+# This first graph is a boxplot. I subsetted 21 rows and 21 columns from the summary data so that the information would look better in the boxplot. It made the data easier to read to make a smaller data frame out of the large one.
 
 ``` r
 library(ggplot2)  
-p<-ggplot(SummaryData, aes(x=Countries.NewConfirmed, y=Countries.Country)) +  
-  geom_boxplot(outlier.color="red", outlier.shape = 8)
+Chart<-GET("https://api.covid19api.com/total/dayone/country/south-africa")  
+Chartt<-(content(Chart, "text"))  
+Charttt<-fromJSON(Chartt, flatten=TRUE)  
+SouthAfrica<-as.data.frame(Charttt)  
+l<-SouthAfrica[c(1:12),c(1:12)]
+d<-DayOneData[c(1:12),c(1:12)]  
+
+p<-ggplot(l, aes(x=Country, y=Active)) +  
+  geom_boxplot(width=0.7, aes(fill=Country)) 
+print(p)  
 ```
+
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+``` r
+p2<-ggplot(d, aes(x=Country, y=Active)) + 
+  geom_boxplot(width=0.7, aes(fill=Country))  
+print(p2)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->
+
+# This second graph is
+
+``` r
+Graphdata<-SummaryData[c(1:21),c(1:21)]
+g <- ggplot(data=Graphdata, aes(x = Countries.CountryCode, y = Countries.TotalDeaths)) +  
+  geom_bar(stat = "identity", width=0.7, col = "red", fill = "pink") 
+print(g)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+``` r
+dd<-DayOneData[c(1:55),c(1:12)]
+s<-ggplot(data=dd, aes(x=Recovered)) +  
+  geom_histogram(binwidth=2, color="blue", fill="lightblue") +  
+  geom_vline(aes(xintercept=mean(Recovered)),  
+             color="black", linetype="dashed", size=1)
+print(s)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+``` r
+q<-ggplot(data = Summary1, aes(x = Countries.TotalConfirmed, y = Countries.TotalDeaths)) +  
+  geom_point(shape=10, color="orange") + geom_smooth(method=lm)  
+print(q)
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
