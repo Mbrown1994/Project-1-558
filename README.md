@@ -96,14 +96,14 @@ SummaryData %>% summarise(avg=mean(Countries.NewConfirmed), avg2=mean(Countries.
 ```
 
     ##        avg    avg2     avg3     avg4
-    ## 1 777.5573 1221785 10.21354 24991.51
+    ## 1 1478.839 1222640 23.46354 25005.94
 
 ``` r
 SummaryData %>% summarise(med=median(Global.NewConfirmed), med2=median(Global.TotalConfirmed), med3=median(Global.NewDeaths), med4=median(Global.TotalDeaths))  
 ```
 
     ##      med      med2 med3    med4
-    ## 1 149291 234582768 1961 4798370
+    ## 1 283937 234746800 4505 4801141
 
 ``` r
 SummaryData %>% summarise(sd1=sd(Countries.NewRecovered), sd2=sd(Countries.TotalRecovered), sd3=sd(Global.NewRecovered), sd4=sd(Global.TotalRecovered))  
