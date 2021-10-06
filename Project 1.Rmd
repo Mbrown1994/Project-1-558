@@ -16,7 +16,7 @@ output:
   * dplyr
   
 ## This helper function converts columns that contain numeric data stored as character values to numeric data types. I made this function first, in case I would need it moving forward.  
-```{r,echo=FALSE}  
+```{r,echo=TRUE}  
 convertToNumeric<-function(vec){  
   if(any(is.na(suppressWarnings(as.numeric(vec))) == TRUE)){  
     output <- vec  
@@ -65,7 +65,7 @@ UnitedCanada<-function(type="all", Country="all"){
 
 
 ## This function attempted to pull form the Status Endpoint. I was able to get it to subset for Australia confirmed cases but could not get it to subset user friendly information. 
-```{r,echo=FALSE}  
+```{r,echo=TRUE}  
 StatusEndpoint<-function(type="all", Country="all"){  
   outputAPI<-GET("https://api.covid19api.com/dayone/country/australia/status/confirmed/live")  
   data<-fromJSON(rawToChar(outputAPI$content))  
