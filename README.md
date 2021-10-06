@@ -3,60 +3,53 @@ Project 1 558
 Mary Brown
 10/4/2021
 
-# This code chunk connects to the COVID API and converts the summary information to text, then to json, and lastly to a data frame.
+## Required packages for this Project
+
+-   Httr  
+-   jsonlite  
+-   ggplot2  
+-   knitr
+
+## This helper function converts columns that contain numeric data stored as character values to numeric data types. I made this function first, in case I would need it moving forward.
+
+## This code chunk connects to the COVID API and converts the summary information to text, then to json, and lastly to a data frame. This was just practice to make sure the correct data could be pulled.
 
 ``` r
 library(httr)  
 library(jsonlite)  
-Data<-GET("https://api.covid19api.com/summary")  
+Data<-GET("https://api.covid19api.com/total/dayone/country/south-africa")  
 get_text<-(content(Data,"text"))  
 get_json<-fromJSON(get_text, flatten=TRUE)  
 get_df<-as.data.frame(get_json)  
 ```
 
-# This function returns the number of cases of either confirmed cases, active cases, deaths, or recovered cases (user specified) for the United States
+## This function returns user specified type by a user specified country: either the United States or Canada
 
 ``` r
-library(magrittr)  
-library(dplyr)  
-USAdata<-function(type="all"){  
-  outputAPI<-GET("https://api.covid19api.com/total/country/united-states")  
-  data<-fromJSON(rawToChar(outputAPI$content))
-  if(type !="all"){  
-    data<-data %>% select(type)
-  }  
-  return(data)
-    }  
-```
-
-# This function returns user specified type by a user specified country in North America (united-states or canada)
-
-``` r
-NorthAmerica<-function(type="all", Country="all"){  
+UnitedCanada<-function(type="all", Country="all"){  
   outputAPI<-GET("https://api.covid19api.com/total/country/united-states")  
   data<-fromJSON(rawToChar(outputAPI$content))  
   if (type %in% c("Deaths", "Recovered", "Active", "Confirmed", "Date", "Country")){  
-    if (Country == "canada"){  
+    if (Country == "Canada"){  
       baseurl <- "https://api.covid19api.com/total/country/"  
       fullURL <- paste0(baseurl, Country)  
       data <- fromJSON(fullURL)  
       data <- data %>% select(type)  
     }  
-    else if (Country == "united-states"){  
+    else if (Country == "United States"){  
       baseurl <- "https://api.covid19api.com/total/country/"  
       fullURL <- paste0(baseurl, Country)  
       data <- fromJSON(fullURL)  
       data <- data %>% select(type)  
     }  
-  }  
-  else {  
-    stop("Error: please specify either united-states or canada or a valid type")  
   }  
   return(data)  
 }  
 ```
 
-# Pull data from at least two endpoints
+## This function attempted to pull form the Status Endpoint. I was able to get it to subset for Australia confirmed cases but could not get it to subset user friendly information.
+
+## Pull data from at least two endpoints. For all of the below EDA, I pulled right from the API and played around with data because I was unable to get enough information from my user friendly functions.
 
 ``` r
 DataPull<-GET("https://api.covid19api.com/summary")  
@@ -75,13 +68,13 @@ JSONdatapull3<-fromJSON(Datapulltext3, flatten=TRUE)
 DayOneData<-as.data.frame(JSONdatapull3)
 ```
 
-# You should create at least two new variables that are functions of the variables from a data set you use.
+## You should create at least two new variables that are functions of the variables from a data set you use.
 
 ``` r
 Summary1<-mutate(SummaryData, OldConfirmed = Global.TotalConfirmed-Global.NewConfirmed, OldDeaths = Global.TotalDeaths-Global.NewDeaths)  
 ```
 
-# Create a few contingecy tables for comparison. The first one compares the Deaths in South Africa to the Deaths in the United States (since the first recorded case). The second table compares the confirmed cases in South Africa to the confirmed cases in the United States(since the first recorded case). The third table compares the amount recovered in south africa to the amount recovered in the united states(since the first recorded case).
+## Create a few contingecy tables for comparison. The first one compares the Deaths in South Africa to the Deaths in the United States (since the first recorded case). The second table compares the confirmed cases in South Africa to the confirmed cases in the United States(since the first recorded case). The third table compares the amount recovered in south africa to the amount recovered in the united states(since the first recorded case).
 
 ``` r
 Table1<-table(TotalSouthAfricaData$Deaths, DayOneData$Deaths)
@@ -89,7 +82,7 @@ Table2<-table(TotalSouthAfricaData$Confirmed, DayOneData$Confirmed)
 Table3<- table(TotalSouthAfricaData$Recovered, DayOneData$Recovered)
 ```
 
-# Some numerical summaries for quantitative variables are shown here:
+## Some numerical summaries for quantitative variables are shown here (averages, standard deviation, and median:
 
 ``` r
 SummaryData %>% summarise(avg=mean(Countries.NewConfirmed), avg2=mean(Countries.TotalConfirmed), avg3=mean(Countries.NewDeaths), avg4=mean(Countries.TotalDeaths))  
@@ -112,7 +105,7 @@ SummaryData %>% summarise(sd1=sd(Countries.NewRecovered), sd2=sd(Countries.Total
     ##   sd1 sd2 sd3 sd4
     ## 1   0   0   0   0
 
-# This first graph is a boxplot. I subsetted 21 rows and 21 columns from the summary data so that the information would look better in the boxplot. It made the data easier to read to make a smaller data frame out of the large one.
+## This section shows the boxplots. I subsetted 21 rows and 21 columns from the summary data so that the information would look better in the boxplot. It made the data easier to read to make a smaller data frame out of the large one. One boxplot shows the Active cases for the United States while the other one shows the Active cases for South Africa.
 
 ``` r
 library(ggplot2)  
@@ -128,7 +121,7 @@ p<-ggplot(l, aes(x=Country, y=Active)) +
 print(p)  
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-98-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ``` r
 p2<-ggplot(d, aes(x=Country, y=Active)) + 
@@ -136,9 +129,9 @@ p2<-ggplot(d, aes(x=Country, y=Active)) +
 print(p2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-98-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
 
-# This second graph is
+## This second graph is boxplot that explores the total deaths by specific countries. I pulled specific countries to compare data.
 
 ``` r
 Graphdata<-SummaryData[c(1:21),c(1:21)]
@@ -147,7 +140,9 @@ g <- ggplot(data=Graphdata, aes(x = Countries.CountryCode, y = Countries.TotalDe
 print(g)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-99-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+## The below graph is a histogram showing the recovered cases for the United States. I added a mean line showing the average.
 
 ``` r
 dd<-DayOneData[c(1:55),c(1:12)]
@@ -158,14 +153,16 @@ s<-ggplot(data=dd, aes(x=Recovered)) +
 print(s)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-100-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+## The below graph is a scatterplot showing the new confirmed cases within countries vs the new deaths within countries
 
 ``` r
-q<-ggplot(data = Summary1, aes(x = Countries.TotalConfirmed, y = Countries.TotalDeaths)) +  
+q<-ggplot(data = Summary1, aes(x = Countries.NewConfirmed, y = Countries.NewDeaths)) +  
   geom_point(shape=10, color="orange") + geom_smooth(method=lm)  
 print(q)
 ```
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-gfm/unnamed-chunk-101-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
