@@ -12,7 +12,8 @@ output:
   * Httr  
   * jsonlite  
   * ggplot2  
-  * knitr
+  * knitr  
+  * dplyr
   
 ## This helper function converts columns that contain numeric data stored as character values to numeric data types. I made this function first, in case I would need it moving forward.  
 ```{r,echo=FALSE}  
@@ -112,7 +113,8 @@ DayOneData<-as.data.frame(JSONdatapull3)
 ```  
 
 ## You should create at least two new variables that are functions of the variables from a data set you use.  
-```{r, echo=TRUE}  
+```{r, echo=TRUE} 
+library(dplyr)
 Summary1<-mutate(SummaryData, OldConfirmed = Global.TotalConfirmed-Global.NewConfirmed, OldDeaths = Global.TotalDeaths-Global.NewDeaths)  
 ```  
 
