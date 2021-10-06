@@ -96,14 +96,14 @@ SummaryData %>% summarise(avg=mean(Countries.NewConfirmed), avg2=mean(Countries.
 ```
 
     ##        avg    avg2     avg3     avg4
-    ## 1 1581.312 1224292 23.77604 25031.05
+    ## 1 1243.552 1226464 25.02604 25069.54
 
 ``` r
 SummaryData %>% summarise(med=median(Global.NewConfirmed), med2=median(Global.TotalConfirmed), med3=median(Global.NewDeaths), med4=median(Global.TotalDeaths))  
 ```
 
     ##      med      med2 med3    med4
-    ## 1 303612 235063971 4565 4805962
+    ## 1 238762 235481156 4805 4813351
 
 ``` r
 SummaryData %>% summarise(sd1=sd(Countries.NewRecovered), sd2=sd(Countries.TotalRecovered), sd3=sd(Global.NewRecovered), sd4=sd(Global.TotalRecovered))  
@@ -128,7 +128,7 @@ p<-ggplot(l, aes(x=Country, y=Active)) +
 print(p)  
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-98-1.png)<!-- -->
 
 ``` r
 p2<-ggplot(d, aes(x=Country, y=Active)) + 
@@ -136,7 +136,7 @@ p2<-ggplot(d, aes(x=Country, y=Active)) +
 print(p2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-98-2.png)<!-- -->
 
 # This second graph is
 
@@ -147,7 +147,7 @@ g <- ggplot(data=Graphdata, aes(x = Countries.CountryCode, y = Countries.TotalDe
 print(g)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-99-1.png)<!-- -->
 
 ``` r
 dd<-DayOneData[c(1:55),c(1:12)]
@@ -158,7 +158,7 @@ s<-ggplot(data=dd, aes(x=Recovered)) +
 print(s)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-100-1.png)<!-- -->
 
 ``` r
 q<-ggplot(data = Summary1, aes(x = Countries.TotalConfirmed, y = Countries.TotalDeaths)) +  
@@ -168,4 +168,4 @@ print(q)
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-101-1.png)<!-- -->
