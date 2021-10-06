@@ -8,9 +8,22 @@ Mary Brown
 -   Httr  
 -   jsonlite  
 -   ggplot2  
--   knitr
+-   knitr  
+-   dplyr
 
 ## This helper function converts columns that contain numeric data stored as character values to numeric data types. I made this function first, in case I would need it moving forward.
+
+``` r
+convertToNumeric<-function(vec){  
+  if(any(is.na(suppressWarnings(as.numeric(vec))) == TRUE)){  
+    output <- vec  
+  }  
+  else{  
+    output<-as.numeric(vec)  
+  }  
+  return(output)  
+}  
+```
 
 ## This code chunk connects to the COVID API and converts the summary information to text, then to json, and lastly to a data frame. This was just practice to make sure the correct data could be pulled.
 
@@ -49,6 +62,34 @@ UnitedCanada<-function(type="all", Country="all"){
 
 ## This function attempted to pull form the Status Endpoint. I was able to get it to subset for Australia confirmed cases but could not get it to subset user friendly information.
 
+``` r
+StatusEndpoint<-function(type="all", Country="all"){  
+  outputAPI<-GET("https://api.covid19api.com/dayone/country/australia/status/confirmed/live")  
+  data<-fromJSON(rawToChar(outputAPI$content))  
+  if (type %in% c("Status", "Country")){  
+    if (type == "Deaths"){  
+      baseurl <- "https://api.covid19api.com/dayone/country/australi/status/"  
+      fullURL <- paste0(baseurl, type, "/live")  
+      data<-fromJSON(fullURL)  
+      data<- data %>% select(type)  
+    }  
+    if (type == "Confirmed"){  
+      baseurl <- "https://api.covid19api.com/dayone/country/australia/status/"  
+      fullURL <- paste0(baseurl, type, "/live")  
+      data<-fromJSON(fullURL)  
+      data<-data %>% select(type)  
+    }  
+    if (type == "Recovered"){  
+      baseurl <- "https://api.covid19api.com/dayone/country/australia/status/"  
+      fullURL<-paste0(baseurl, type, "/live")  
+      data <-fromJSON(fullURL)  
+      data<-data %>% select(type)  
+    }   
+  }
+    return(data)
+}
+```
+
 ## Pull data from at least two endpoints. For all of the below EDA, I pulled right from the API and played around with data because I was unable to get enough information from my user friendly functions.
 
 ``` r
@@ -71,6 +112,7 @@ DayOneData<-as.data.frame(JSONdatapull3)
 ## You should create at least two new variables that are functions of the variables from a data set you use.
 
 ``` r
+library(dplyr)
 Summary1<-mutate(SummaryData, OldConfirmed = Global.TotalConfirmed-Global.NewConfirmed, OldDeaths = Global.TotalDeaths-Global.NewDeaths)  
 ```
 
@@ -121,7 +163,7 @@ p<-ggplot(l, aes(x=Country, y=Active)) +
 print(p)  
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ``` r
 p2<-ggplot(d, aes(x=Country, y=Active)) + 
@@ -129,7 +171,7 @@ p2<-ggplot(d, aes(x=Country, y=Active)) +
 print(p2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
 
 ## This second graph is boxplot that explores the total deaths by specific countries. I pulled specific countries to compare data.
 
@@ -140,7 +182,7 @@ g <- ggplot(data=Graphdata, aes(x = Countries.CountryCode, y = Countries.TotalDe
 print(g)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ## The below graph is a histogram showing the recovered cases for the United States. I added a mean line showing the average.
 
@@ -153,7 +195,7 @@ s<-ggplot(data=dd, aes(x=Recovered)) +
 print(s)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ## The below graph is a scatterplot showing the new confirmed cases within countries vs the new deaths within countries
 
@@ -165,4 +207,4 @@ print(q)
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
