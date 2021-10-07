@@ -248,7 +248,7 @@ p<-ggplot(Summary2, aes(x=Country, y=Deaths)) +
 print(p)  
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ## This second graph is barplot that explores the total cases by specific provinces in Australia. It’s interesting to see how many more cases are in specific provinces. I utilized stat, width, color, and fill for this plot. I also changed the angle of the x-axis labels to make them easier to read.
 
@@ -258,7 +258,7 @@ g <- ggplot(data=Summary1, aes(x = Province, y = Cases)) +
 print(g)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ## The below graph is a histogram showing the recovered cases for the United States. I added a mean line showing the average. The data frame for this was so large that I decided to subset it making a smaller data frame from rows 1:55 and columns 1:12.
 
@@ -271,7 +271,7 @@ s<-ggplot(data=RecovUS, aes(x=Recovered)) +
 print(s)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ## The below graph is a scatterplot showing the survived cases vs deaths within the United States.
 
@@ -283,7 +283,7 @@ print(q)
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- --> \#\# The
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- --> \#\# The
 below graph is a line plot showing the deaths vs confirmed cases in the
 United States. Since the data set for this was so large, I decided to
 subset it - making a smaller data frame of rows 1:55 and columns 1:12
@@ -296,4 +296,4 @@ ggplot(data=RecovUS, aes(x=Deaths, y=Confirmed, group=1)) +
   geom_point()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
