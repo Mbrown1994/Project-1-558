@@ -10,6 +10,8 @@ Mary Brown
 -   ggplot2  
 -   knitr  
 -   dplyr
+-   magrittr  
+-   grid
 
 ## This helper function converts columns that contain numeric data stored as character values to numeric data types. I made this function first, in case I would need it moving forward.
 
@@ -30,11 +32,13 @@ convertToNumeric<-function(vec){
 ``` r
 library(httr)  
 library(jsonlite)  
-Data<-GET("https://api.covid19api.com/total/dayone/country/south-africa")  
+Data<-GET("https://api.covid19api.com/summary")  
 get_text<-(content(Data,"text"))  
 get_json<-fromJSON(get_text, flatten=TRUE)  
 get_df<-as.data.frame(get_json)  
 ```
+
+## This code chunk interacts with the countries endpoint of the COVID API.
 
 ## This function returns user specified type by a user specified country: either the United States or Canada
 
@@ -42,7 +46,7 @@ get_df<-as.data.frame(get_json)
 UnitedCanada<-function(type="all", Country="all"){  
   outputAPI<-GET("https://api.covid19api.com/total/country/united-states")  
   data<-fromJSON(rawToChar(outputAPI$content))  
-  if (type %in% c("Deaths", "Recovered", "Active", "Confirmed", "Date", "Country")){  
+  if (type %in% c("Deaths", "Recovered", "Active", "Confirmed", "Country")){  
     if (Country == "Canada"){  
       baseurl <- "https://api.covid19api.com/total/country/"  
       fullURL <- paste0(baseurl, Country)  
@@ -60,28 +64,28 @@ UnitedCanada<-function(type="all", Country="all"){
 }  
 ```
 
-## This function attempted to pull form the Status Endpoint. I was able to get it to subset for Australia confirmed cases but could not get it to subset user friendly information.
+## This function utilizes the Status endpoint for the COVID API. The data is for Australia with the status being user specified (Deaths, Confirmed, Recovered).
 
 ``` r
-StatusEndpoint<-function(type="all", Country="all"){  
+StatusEndpoint<-function(type="all", Country="Australia"){  
   outputAPI<-GET("https://api.covid19api.com/dayone/country/australia/status/confirmed/live")  
   data<-fromJSON(rawToChar(outputAPI$content))  
-  if (type %in% c("Status", "Country")){  
+  if (type %in% "Status"){  
     if (type == "Deaths"){  
-      baseurl <- "https://api.covid19api.com/dayone/country/australi/status/"  
-      fullURL <- paste0(baseurl, type, "/live")  
+      baseurl <- "https://api.covid19api.com/dayone/country/australia/status/"  
+      fullURL <- paste0(baseurl, deaths, "/live")  
       data<-fromJSON(fullURL)  
       data<- data %>% select(type)  
     }  
     if (type == "Confirmed"){  
       baseurl <- "https://api.covid19api.com/dayone/country/australia/status/"  
-      fullURL <- paste0(baseurl, type, "/live")  
+      fullURL <- paste0(baseurl, confirmed, "/live")  
       data<-fromJSON(fullURL)  
       data<-data %>% select(type)  
     }  
     if (type == "Recovered"){  
       baseurl <- "https://api.covid19api.com/dayone/country/australia/status/"  
-      fullURL<-paste0(baseurl, type, "/live")  
+      fullURL<-paste0(baseurl, recovered, "/live")  
       data <-fromJSON(fullURL)  
       data<-data %>% select(type)  
     }   
@@ -90,121 +94,188 @@ StatusEndpoint<-function(type="all", Country="all"){
 }
 ```
 
-## Pull data from at least two endpoints. For all of the below EDA, I pulled right from the API and played around with data because I was unable to get enough information from my user friendly functions.
+## Pull data from at least two endpoints. For this section, I used the status endpoint function that I made and the USA/Canada function.
 
 ``` r
-DataPull<-GET("https://api.covid19api.com/summary")  
-DataPullText<-(content(DataPull, "text"))  
-JSONdatapull<-fromJSON(DataPullText, flatten=TRUE)  
-SummaryData<-as.data.frame(JSONdatapull)  
-
-DataPull2<-GET("https://api.covid19api.com/total/country/south-africa")  
-DataPullText2<-(content(DataPull2, "text"))  
-JSONdatapull2<-fromJSON(DataPullText2, flatten=TRUE)  
-TotalSouthAfricaData<-as.data.frame(JSONdatapull2)  
-
-DataPull3<-GET("https://api.covid19api.com/total/dayone/country/united-states")  
-Datapulltext3<-(content(DataPull3, "text"))  
-JSONdatapull3<-fromJSON(Datapulltext3, flatten=TRUE)  
-DayOneData<-as.data.frame(JSONdatapull3)
+AustraliaConfirmed<-StatusEndpoint("Confirmed", "Australia")  
+UnitedStatesConfirmed<- UnitedCanada("Confirmed", "United States")  
+UnitedStatesDeaths<- UnitedCanada("Deaths", "United States")  
+UnitedStatesRecovered<- UnitedCanada("Recovered", "United States")
+CanadaConfirmed<- UnitedCanada("Confirmed", "Canada")  
+CanadaDeaths<- UnitedCanada("Deaths", "Canada")  
+CanadaRecovered<- UnitedCanada("Recovered", "Canada")  
+UnitedStatesAll<-UnitedCanada("all", "United States")
 ```
 
-## You should create at least two new variables that are functions of the variables from a data set you use.
+## I created three new variables - the mean of cases in Australia, non-active cases for the United States, and the amount that have survived for the United States.
 
 ``` r
 library(dplyr)
-Summary1<-mutate(SummaryData, OldConfirmed = Global.TotalConfirmed-Global.NewConfirmed, OldDeaths = Global.TotalDeaths-Global.NewDeaths)  
+Summary1<-mutate(AustraliaConfirmed, Average=mean(Cases)) 
+Summary2<-mutate(UnitedStatesAll, NonActiveCases=(Confirmed-Active))  
+Summary3<-mutate(UnitedStatesAll, Survived=(Confirmed-Deaths))
 ```
 
-## Create a few contingecy tables for comparison. The first one compares the Deaths in South Africa to the Deaths in the United States (since the first recorded case). The second table compares the confirmed cases in South Africa to the confirmed cases in the United States(since the first recorded case). The third table compares the amount recovered in south africa to the amount recovered in the united states(since the first recorded case).
+## Create a few contingecy tables for comparison. The first contingency table looks at the Provinces in Australia, the second table looks at the dates for Australia, the Provinces for Australia, and the Status’ for Australia. The third table looks at deaths in the United States. Contingency tables are useful for summarization of categorical variables - I don’t think I had the best data to work with here to make my contingency tables but an example of a 2-way contingency table would be table two.
 
 ``` r
-Table1<-table(TotalSouthAfricaData$Deaths, DayOneData$Deaths)
-Table2<-table(TotalSouthAfricaData$Confirmed, DayOneData$Confirmed)  
-Table3<- table(TotalSouthAfricaData$Recovered, DayOneData$Recovered)
+Table1<-table(AustraliaConfirmed$Province)  
+Table2<-table(AustraliaConfirmed$Date, AustraliaConfirmed$Province)
+Table4<-table(AustraliaConfirmed$Country)
 ```
 
-## Some numerical summaries for quantitative variables are shown here (averages, standard deviation, and median:
+## Some numerical summaries for quantitative variables at each setting of some of the categorial variables. I utilized the mean and median as well as the group\_by and summarise functions.
 
 ``` r
-SummaryData %>% summarise(avg=mean(Countries.NewConfirmed), avg2=mean(Countries.TotalConfirmed), avg3=mean(Countries.NewDeaths), avg4=mean(Countries.TotalDeaths))  
+Summary2 %>% group_by(Confirmed) %>% summarise(avg=mean(Confirmed), med=median(Confirmed))  
 ```
 
-    ##        avg    avg2     avg3     avg4
-    ## 1 1243.552 1226464 25.02604 25069.54
+    ## # A tibble: 596 × 3
+    ##    Confirmed   avg   med
+    ##        <int> <dbl> <dbl>
+    ##  1         1     1     1
+    ##  2         2     2     2
+    ##  3         5     5     5
+    ##  4         6     6     6
+    ##  5         8     8     8
+    ##  6        11    11    11
+    ##  7        12    12    12
+    ##  8        13    13    13
+    ##  9        14    14    14
+    ## 10        16    16    16
+    ## # … with 586 more rows
 
 ``` r
-SummaryData %>% summarise(med=median(Global.NewConfirmed), med2=median(Global.TotalConfirmed), med3=median(Global.NewDeaths), med4=median(Global.TotalDeaths))  
+Summary2 %>% group_by(Deaths) %>% summarise(avg=mean(Deaths), med=median(Deaths))  
 ```
 
-    ##      med      med2 med3    med4
-    ## 1 238762 235481156 4805 4813351
+    ## # A tibble: 585 × 3
+    ##    Deaths   avg   med
+    ##     <int> <dbl> <dbl>
+    ##  1      0     0     0
+    ##  2      1     1     1
+    ##  3      6     6     6
+    ##  4      7     7     7
+    ##  5     11    11    11
+    ##  6     12    12    12
+    ##  7     14    14    14
+    ##  8     17    17    17
+    ##  9     21    21    21
+    ## 10     22    22    22
+    ## # … with 575 more rows
 
 ``` r
-SummaryData %>% summarise(sd1=sd(Countries.NewRecovered), sd2=sd(Countries.TotalRecovered), sd3=sd(Global.NewRecovered), sd4=sd(Global.TotalRecovered))  
+Summary3 %>% group_by(Survived) %>% summarise(avg=mean(Survived), med=median(Survived))  
 ```
 
-    ##   sd1 sd2 sd3 sd4
-    ## 1   0   0   0   0
-
-## This section shows the boxplots. I subsetted 21 rows and 21 columns from the summary data so that the information would look better in the boxplot. It made the data easier to read to make a smaller data frame out of the large one. One boxplot shows the Active cases for the United States while the other one shows the Active cases for South Africa.
+    ## # A tibble: 596 × 3
+    ##    Survived   avg   med
+    ##       <int> <dbl> <dbl>
+    ##  1        1     1     1
+    ##  2        2     2     2
+    ##  3        5     5     5
+    ##  4        6     6     6
+    ##  5        8     8     8
+    ##  6       11    11    11
+    ##  7       12    12    12
+    ##  8       13    13    13
+    ##  9       14    14    14
+    ## 10       16    16    16
+    ## # … with 586 more rows
 
 ``` r
-library(ggplot2)  
-Chart<-GET("https://api.covid19api.com/total/dayone/country/south-africa")  
-Chartt<-(content(Chart, "text"))  
-Charttt<-fromJSON(Chartt, flatten=TRUE)  
-SouthAfrica<-as.data.frame(Charttt)  
-l<-SouthAfrica[c(1:12),c(1:12)]
-d<-DayOneData[c(1:12),c(1:12)]  
+Summary3 %>% group_by(Active) %>% summarise(avg=mean(Active), med=median(Active)) 
+```
 
-p<-ggplot(l, aes(x=Country, y=Active)) +  
+    ## # A tibble: 594 × 3
+    ##    Active   avg   med
+    ##     <int> <dbl> <dbl>
+    ##  1      1     1     1
+    ##  2      2     2     2
+    ##  3      5     5     5
+    ##  4      6     6     6
+    ##  5      8     8     8
+    ##  6      9     9     9
+    ##  7     10    10    10
+    ##  8     11    11    11
+    ##  9     12    12    12
+    ## 10     17    17    17
+    ## # … with 584 more rows
+
+``` r
+Summary3 %>% group_by(Recovered) %>% summarise(avg=mean(Recovered), med=median(Recovered))
+```
+
+    ## # A tibble: 278 × 3
+    ##    Recovered   avg   med
+    ##        <int> <dbl> <dbl>
+    ##  1         0     0     0
+    ##  2         3     3     3
+    ##  3         5     5     5
+    ##  4         6     6     6
+    ##  5         7     7     7
+    ##  6         8     8     8
+    ##  7        12    12    12
+    ##  8        17    17    17
+    ##  9       105   105   105
+    ## 10       121   121   121
+    ## # … with 268 more rows
+
+## This section shows a boxplot for the deaths in the United States. The line thrrough the boxplot marks the median which is the mid-point of the data. I utilized width and fill settings to make the graph look more presentable with such large data.
+
+``` r
+library(ggplot2)
+p<-ggplot(Summary2, aes(x=Country, y=Deaths)) +  
   geom_boxplot(width=0.7, aes(fill=Country)) 
 print(p)  
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-130-1.png)<!-- -->
+
+## This second graph is barplot that explores the total cases by specific provinces in Australia. It’s interesting to see how many more cases are in specific provinces. I utilized stat, width, color, and fill for this plot. I also changed the angle of the x-axis labels to make them easier to read.
 
 ``` r
-p2<-ggplot(d, aes(x=Country, y=Active)) + 
-  geom_boxplot(width=0.7, aes(fill=Country))  
-print(p2)
-```
-
-![](README_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
-
-## This second graph is boxplot that explores the total deaths by specific countries. I pulled specific countries to compare data.
-
-``` r
-Graphdata<-SummaryData[c(1:21),c(1:21)]
-g <- ggplot(data=Graphdata, aes(x = Countries.CountryCode, y = Countries.TotalDeaths)) +  
-  geom_bar(stat = "identity", width=0.7, col = "red", fill = "pink") 
+g <- ggplot(data=Summary1, aes(x = Province, y = Cases)) +  
+  geom_bar(stat = "identity", width=0.7, col = "purple", fill = "pink") + theme(axis.text.x = element_text(angle=90)) 
 print(g)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-131-1.png)<!-- -->
 
-## The below graph is a histogram showing the recovered cases for the United States. I added a mean line showing the average.
+## The below graph is a histogram showing the recovered cases for the United States. I added a mean line showing the average. The data frame for this was so large that I decided to subset it making a smaller data frame from rows 1:55 and columns 1:12.
 
 ``` r
-dd<-DayOneData[c(1:55),c(1:12)]
-s<-ggplot(data=dd, aes(x=Recovered)) +  
+RecovUS<-Summary3[c(1:55),c(1:12)]
+s<-ggplot(data=RecovUS, aes(x=Recovered)) +  
   geom_histogram(binwidth=2, color="blue", fill="lightblue") +  
   geom_vline(aes(xintercept=mean(Recovered)),  
              color="black", linetype="dashed", size=1)
 print(s)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-132-1.png)<!-- -->
 
-## The below graph is a scatterplot showing the new confirmed cases within countries vs the new deaths within countries
+## The below graph is a scatterplot showing the survived cases vs deaths within the United States.
 
 ``` r
-q<-ggplot(data = Summary1, aes(x = Countries.NewConfirmed, y = Countries.NewDeaths)) +  
+q<-ggplot(data = Summary3, aes(x = Survived, y = Deaths)) +  
   geom_point(shape=10, color="orange") + geom_smooth(method=lm)  
 print(q)
 ```
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-133-1.png)<!-- --> \#\# The
+below graph is a line plot showing the deaths vs confirmed cases in the
+United States. Since the data set for this was so large, I decided to
+subset it - making a smaller data frame of rows 1:55 and columns 1:12
+(RecovUS)
+
+``` r
+library(grid)
+ggplot(data=RecovUS, aes(x=Deaths, y=Confirmed, group=1)) +  
+  geom_line(color = "orange", arrow=arrow()) + 
+  geom_point()
+```
+
+![](README_files/figure-gfm/unnamed-chunk-134-1.png)<!-- -->
