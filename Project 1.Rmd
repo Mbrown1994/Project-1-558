@@ -187,6 +187,8 @@ q<-ggplot(data = Summary3, aes(x = Survived, y = Deaths)) +
   geom_point(shape=10, color="orange") + geom_smooth(method=lm)  
 print(q)
 ```
+
+
 ## The below graph is a line plot showing the deaths vs confirmed cases in the United States. Since the data set for this was so large, I decided to subset it - making a smaller data frame of rows 1:55 and columns 1:12 (RecovUS)
 ```{r,echo=TRUE}  
 library(grid)
