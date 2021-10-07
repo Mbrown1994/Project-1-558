@@ -283,11 +283,9 @@ print(q)
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- --> \#\# The
-below graph is a line plot showing the deaths vs confirmed cases in the
-United States. Since the data set for this was so large, I decided to
-subset it - making a smaller data frame of rows 1:55 and columns 1:12
-(RecovUS)
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+## The below graph is a line plot showing the deaths vs confirmed cases in the United States. Since the data set for this was so large, I decided to subset it - making a smaller data frame of rows 1:55 and columns 1:12 (RecovUS)
 
 ``` r
 library(grid)
