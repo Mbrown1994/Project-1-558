@@ -134,110 +134,50 @@ Summary2<-mutate(UnitedStatesAll, NonActiveCases=(Confirmed-Active))
 Summary3<-mutate(UnitedStatesAll, Survived=(Confirmed-Deaths))
 ```
 
-## Create a few contingecy tables for comparison. The first contingency table looks at the Provinces in Australia, the second table looks at the dates for Australia and the Provinces for Australia. The third table looks at deaths in the United States. Contingency tables are useful for summarization of categorical variables - I don’t think I had the best data to work with here to make my contingency tables but an example of a 2-way contingency table would be table two.
+## Create a few contingecy tables for comparison. The first contingency table looks at the Provinces in Australia, the second table looks at the dates for Australia and the Provinces for Australia. Table 4 looks at the conutry Australia, the provinces, and dates. Contingency tables are useful for summarization of categorical variables - I don’t think I had the best data to work with here to make my contingency tables but an example of a 2-way contingency table would be table two and example of a three way table would be Table 4.
 
 ``` r
 Table1<-table(AustraliaConfirmed$Province)  
 Table2<-table(AustraliaConfirmed$Date, AustraliaConfirmed$Province)
-Table4<-table(AustraliaConfirmed$Country)
+Table4<-table(AustraliaConfirmed$Country, AustraliaConfirmed$Date, AustraliaConfirmed$Province)  
 ```
 
-## Some numerical summaries for quantitative variables at each setting of some of the categorial variables. I utilized the mean and median as well as the group\_by and summarise functions.
+## Some numerical summaries for quantitative variables at each setting of some of the categorial variables. Below you can view the mean, median, and standard deviations for the different Summaries that I created.
 
 ``` r
-Summary2 %>% group_by(Confirmed) %>% summarise(avg=mean(Confirmed), med=median(Confirmed))  
+Summary2 %>% summarise(avg=mean(Confirmed), med=median(Confirmed), sd=sd(Confirmed))  
 ```
 
-    ## # A tibble: 596 × 3
-    ##    Confirmed   avg   med
-    ##        <int> <dbl> <dbl>
-    ##  1         1     1     1
-    ##  2         2     2     2
-    ##  3         5     5     5
-    ##  4         6     6     6
-    ##  5         8     8     8
-    ##  6        11    11    11
-    ##  7        12    12    12
-    ##  8        13    13    13
-    ##  9        14    14    14
-    ## 10        16    16    16
-    ## # … with 586 more rows
+    ##        avg      med       sd
+    ## 1 17387834 13454278 14725466
 
 ``` r
-Summary2 %>% group_by(Deaths) %>% summarise(avg=mean(Deaths), med=median(Deaths))  
+Summary2 %>% summarise(avg=mean(Deaths), med=median(Deaths), sd=sd(Deaths))  
 ```
 
-    ## # A tibble: 585 × 3
-    ##    Deaths   avg   med
-    ##     <int> <dbl> <dbl>
-    ##  1      0     0     0
-    ##  2      1     1     1
-    ##  3      6     6     6
-    ##  4      7     7     7
-    ##  5     11    11    11
-    ##  6     12    12    12
-    ##  7     14    14    14
-    ##  8     17    17    17
-    ##  9     21    21    21
-    ## 10     22    22    22
-    ## # … with 575 more rows
+    ##        avg    med       sd
+    ## 1 328971.5 268956 233302.3
 
 ``` r
-Summary3 %>% group_by(Survived) %>% summarise(avg=mean(Survived), med=median(Survived))  
+Summary3 %>% summarise(avg=mean(Survived), med=median(Survived), sd=sd(Survived))  
 ```
 
-    ## # A tibble: 596 × 3
-    ##    Survived   avg   med
-    ##       <int> <dbl> <dbl>
-    ##  1        1     1     1
-    ##  2        2     2     2
-    ##  3        5     5     5
-    ##  4        6     6     6
-    ##  5        8     8     8
-    ##  6       11    11    11
-    ##  7       12    12    12
-    ##  8       13    13    13
-    ##  9       14    14    14
-    ## 10       16    16    16
-    ## # … with 586 more rows
+    ##        avg      med       sd
+    ## 1 17058863 13185322 14494116
 
 ``` r
-Summary3 %>% group_by(Active) %>% summarise(avg=mean(Active), med=median(Active)) 
+Summary3 %>% summarise(avg=mean(Active), med=median(Active), sd=sd(Active)) 
 ```
 
-    ## # A tibble: 594 × 3
-    ##    Active   avg   med
-    ##     <int> <dbl> <dbl>
-    ##  1      1     1     1
-    ##  2      2     2     2
-    ##  3      5     5     5
-    ##  4      6     6     6
-    ##  5      8     8     8
-    ##  6      9     9     9
-    ##  7     10    10    10
-    ##  8     11    11    11
-    ##  9     12    12    12
-    ## 10     17    17    17
-    ## # … with 584 more rows
+    ##        avg     med       sd
+    ## 1 16234941 8127028 14990047
 
 ``` r
-Summary3 %>% group_by(Recovered) %>% summarise(avg=mean(Recovered), med=median(Recovered))
+Summary3 %>% summarise(avg=mean(Recovered), med=median(Recovered), sd=sd(Recovered))
 ```
 
-    ## # A tibble: 278 × 3
-    ##    Recovered   avg   med
-    ##        <int> <dbl> <dbl>
-    ##  1         0     0     0
-    ##  2         3     3     3
-    ##  3         5     5     5
-    ##  4         6     6     6
-    ##  5         7     7     7
-    ##  6         8     8     8
-    ##  7        12    12    12
-    ##  8        17    17    17
-    ##  9       105   105   105
-    ## 10       121   121   121
-    ## # … with 268 more rows
+    ##        avg med      sd
+    ## 1 796429.2   0 1422295
 
 ## This section shows a boxplot for the deaths in the United States. The line thrrough the boxplot marks the median which is the mid-point of the data. I utilized width and fill settings to make the graph look more presentable with such large data.
 
@@ -248,7 +188,7 @@ p<-ggplot(Summary2, aes(x=Country, y=Deaths)) +
 print(p)  
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 ## This second graph is barplot that explores the total cases by specific provinces in Australia. It’s interesting to see how many more cases are in specific provinces. I utilized stat, width, color, and fill for this plot. I also changed the angle of the x-axis labels to make them easier to read.
 
@@ -258,7 +198,7 @@ g <- ggplot(data=Summary1, aes(x = Province, y = Cases)) +
 print(g)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 ## The below graph is a histogram showing the recovered cases for the United States. I added a mean line showing the average. The data frame for this was so large that I decided to subset it making a smaller data frame from rows 1:55 and columns 1:12.
 
@@ -271,7 +211,7 @@ s<-ggplot(data=RecovUS, aes(x=Recovered)) +
 print(s)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
 
 ## The below graph is a scatterplot showing the survived cases vs deaths within the United States.
 
@@ -283,7 +223,7 @@ print(q)
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
 
 ## The below graph is a line plot showing the deaths vs confirmed cases in the United States. Since the data set for this was so large, I decided to subset it - making a smaller data frame of rows 1:55 and columns 1:12 (RecovUS)
 
@@ -294,4 +234,4 @@ ggplot(data=RecovUS, aes(x=Deaths, y=Confirmed, group=1)) +
   geom_point()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->

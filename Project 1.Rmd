@@ -4,9 +4,9 @@ author: "Mary Brown"
 date: "10/4/2021"
 output:  
   rmarkdown::github_document: 
-  toc: yes  
+  toc: yes 
+   
 ---
-
 
 ## Required packages for this Project  
   * Httr  
@@ -127,7 +127,7 @@ UnitedStatesAll<-UnitedCanada("all", "United States")
 ```  
 
 ## I created three new variables - the mean of cases in Australia, non-active cases for the United States, and the amount that have survived for the United States. 
-```{r, echo=TRUE} 
+```{r, echo=TRUE, message=FALSE} 
 library(dplyr)
 Summary1<-mutate(AustraliaConfirmed, Average=mean(Cases)) 
 Summary2<-mutate(UnitedStatesAll, NonActiveCases=(Confirmed-Active))  
@@ -135,24 +135,24 @@ Summary3<-mutate(UnitedStatesAll, Survived=(Confirmed-Deaths))
 ```  
 
 
-## Create a few contingecy tables for comparison. The first contingency table looks at the Provinces in Australia, the second table looks at the dates for Australia and the Provinces for Australia. The third table looks at deaths in the United States. Contingency tables are useful for summarization of categorical variables - I don't think I had the best data to work with here to make my contingency tables but an example of a 2-way contingency table would be table two.  
+## Create a few contingecy tables for comparison. The first contingency table looks at the Provinces in Australia, the second table looks at the dates for Australia and the Provinces for Australia. Table 4 looks at the conutry Australia, the provinces, and dates. Contingency tables are useful for summarization of categorical variables - I don't think I had the best data to work with here to make my contingency tables but an example of a 2-way contingency table would be table two and example of a three way table would be Table 4. 
 ```{r,echo=TRUE}  
 Table1<-table(AustraliaConfirmed$Province)  
 Table2<-table(AustraliaConfirmed$Date, AustraliaConfirmed$Province)
-Table4<-table(AustraliaConfirmed$Country)
+Table4<-table(AustraliaConfirmed$Country, AustraliaConfirmed$Date, AustraliaConfirmed$Province)  
 ```  
 
-## Some numerical summaries for quantitative variables at each setting of some of the categorial variables. I utilized the mean and median as well as the group_by and summarise functions.
+## Some numerical summaries for quantitative variables at each setting of some of the categorial variables. Below you can view the mean, median, and standard deviations for the different Summaries that I created. 
 ```{r,echo=TRUE}  
-Summary2 %>% group_by(Confirmed) %>% summarise(avg=mean(Confirmed), med=median(Confirmed))  
+Summary2 %>% summarise(avg=mean(Confirmed), med=median(Confirmed), sd=sd(Confirmed))  
 
-Summary2 %>% group_by(Deaths) %>% summarise(avg=mean(Deaths), med=median(Deaths))  
+Summary2 %>% summarise(avg=mean(Deaths), med=median(Deaths), sd=sd(Deaths))  
 
-Summary3 %>% group_by(Survived) %>% summarise(avg=mean(Survived), med=median(Survived))  
+Summary3 %>% summarise(avg=mean(Survived), med=median(Survived), sd=sd(Survived))  
 
-Summary3 %>% group_by(Active) %>% summarise(avg=mean(Active), med=median(Active)) 
+Summary3 %>% summarise(avg=mean(Active), med=median(Active), sd=sd(Active)) 
 
-Summary3 %>% group_by(Recovered) %>% summarise(avg=mean(Recovered), med=median(Recovered))
+Summary3 %>% summarise(avg=mean(Recovered), med=median(Recovered), sd=sd(Recovered))
 ```
 
 ## This section shows a boxplot for the deaths in the United States. The line thrrough the boxplot marks the median which is the mid-point of the data. I utilized width and fill settings to make the graph look more presentable with such large data.  
