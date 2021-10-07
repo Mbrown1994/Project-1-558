@@ -42,7 +42,7 @@ get_df<-as.data.frame(get_json)
 
 
 ## This code chunk interacts with the countries endpoint of the COVID API. 
-```{r,echo=FALSE, warning=FALSE}  
+```{r,echo=TRUE, warning=FALSE}  
 CountriesEndpoint<-function(Country="all")  
   outputAPI<-fromJSON("https://api.covid19api.com/countries")  
   output<-outputAPI$content  
@@ -135,7 +135,7 @@ Summary3<-mutate(UnitedStatesAll, Survived=(Confirmed-Deaths))
 ```  
 
 
-## Create a few contingecy tables for comparison. The first contingency table looks at the Provinces in Australia, the second table looks at the dates for Australia, the Provinces for Australia, and the Status' for Australia. The third table looks at deaths in the United States. Contingency tables are useful for summarization of categorical variables - I don't think I had the best data to work with here to make my contingency tables but an example of a 2-way contingency table would be table two.  
+## Create a few contingecy tables for comparison. The first contingency table looks at the Provinces in Australia, the second table looks at the dates for Australia and the Provinces for Australia. The third table looks at deaths in the United States. Contingency tables are useful for summarization of categorical variables - I don't think I had the best data to work with here to make my contingency tables but an example of a 2-way contingency table would be table two.  
 ```{r,echo=TRUE}  
 Table1<-table(AustraliaConfirmed$Province)  
 Table2<-table(AustraliaConfirmed$Date, AustraliaConfirmed$Province)
